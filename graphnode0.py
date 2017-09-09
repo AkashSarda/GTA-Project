@@ -14,8 +14,8 @@ class State:
 					heuristic += abs(i - self.dimension + 1) + abs(j - self.dimension + 1)
 					continue
 				x = (self.state[i*self.dimension + j] - 1) / self.dimension
-				y = (self.state[i*self.dimension + j] - 1) % self.dimension
-				heuristic += abs(x - i) + abs(y - j)
+				y = (self.state[i*self.dimension + j] - 1) - x * self.dimension
+				heuristic += (abs(x - i) + abs(y - j))
 #				print "x : %d y : %d i : %d j : %d " % (x, y, i, j)
 		return heuristic
 
@@ -126,6 +126,11 @@ class PriorityQueue:
 		self.qu = self.qu[1:]
 		return a
 
+	def isempty(self):
+		if self.qu == []:
+			return False
+		return True
+
 class Solver:
 	def __init__(self, board_obj):
 		self.ini_state = State(board_obj, board_obj.dimension)
@@ -136,51 +141,31 @@ class Solver:
 		q = PriorityQueue()
 		ideal_state = [i + 1 for i in range(0, self.dimension * self.dimension)]
 		ideal_state[self.dimension * self.dimension - 1] = 0
-		visited = {}
+		visited = []
 		q.enqueue((0, s)) # weight, current state
-		weights = {} # should record parents here.
-		weights[s] = (0, None) # weight, parent
-		weight = 0
+		moves = 0
 		found = False
-
-		while True:
+		# print q.isempty()
+		while q.isempty():
 			mst = q.dequeue()
-			#mst[0] is the weight, mst[1] is the tuple. mst[1][0] is current, mst[1][1] is the parent.
 			if mst[1].state == ideal_state:
 				found = True
+				print "Found after %d moves" % (moves)
+				visited.append(mst[1].state)
 				break
-
-			if mst[1] in visited.keys():
+			if mst[1].state in visited:
 				continue
-
-			visited[mst[1]] = weights[mst[1]][1] # recording the parent
+			visited.append(mst[1].state)
+			# print "visited ::::: " + str(visited)
+			moves += 1 # recording the parent
 			for nei in mst[1].giveNeighbours():
-				if nei not in weights.keys():
-					weights[nei] = (mst[1].heuristic + nei.heuristic, mst[1])
-					q.enqueue((weights[nei], nei))
-					continue
-				else:
-					if mst[1].heuristic + nei.heuristic > weights[nei][0]:
-						weights[nei] = (mst[1].heuristic + nei.heuristic, mst[1])
-
+				if nei.state not in visited:
+					q.enqueue((moves + nei.heuristic,nei))
+					# print "enqueueing " + str(nei.state)
+		return visited
 
 b = Board()
-b.duplicate([1,3,0,4,2,5,7,8,6], b.dimension)
-#b.duplicate([1,2,3,4,5,6,7,8,0], b.dimension)
-st = State(b, b.dimension)
-
-#sol = Solver(b)
-#sol.solver()
-
-p = PriorityQueue()
-p.enqueue((1,b))
-p.enqueue((8,b))
-p.enqueue((2,b))
-p.enqueue((5, b))
-p.enqueue((3, b))
-
-print p.dequeue()
-print p.dequeue()
-print p.dequeue()
-print p.dequeue()
-print p.dequeue()
+# b.duplicate([1,5,4,8,6,2,7,3,0], b.dimension)
+b.duplicate([1,3,6,5,0,2,4,7,8], b.dimension)
+sol = Solver(b)
+print sol.solver()
