@@ -4,19 +4,17 @@ class State:
 		self.state = board_state.board # board list
 		self.dimension = dimension
 		self.emp_cell = board_state.emp_cell
-		self.heuristic = self.heuristic()
+		self.heuristic = self.give_heuristic()
 
-	def heuristic(self):
+	def give_heuristic(self):
 		heuristic = 0
 		for i in range(self.dimension):
-			for j in range(self.dimension):
-				if self.state[i*self.dimension + j] == 0:
-					heuristic += abs(i - self.dimension + 1) + abs(j - self.dimension + 1)
-					continue
-				x = (self.state[i*self.dimension + j] - 1) / self.dimension
-				y = (self.state[i*self.dimension + j] - 1) - x * self.dimension
-				heuristic += (abs(x - i) + abs(y - j))
-#				print "x : %d y : %d i : %d j : %d " % (x, y, i, j)
+			for j in range(self.dimension):	
+				a = self.dimension * i + j
+				if self.state[a] != a + 1:
+					heuristic += 1
+		if self.state[self.dimension*self.dimension - 1] == 0:
+			heuristic -= 1
 		return heuristic
 
 	def swap(self, a,b): # because of the fuck-up ive done when calling this function.
@@ -165,8 +163,8 @@ class Solver:
 		return visited
 
 b = Board()
-# b.duplicate([1,5,4,8,6,2,7,3,0], b.dimension)
-b.duplicate([4,1,3,7,2,5,0,8,6], b.dimension)
-#b.duplicate([1,3,6,5,0,2,4,7,8], b.dimension)
+#b.duplicate([1,2,3,5,0,6,4,7,8], b.dimension)
+#b.duplicate([4,1,3,7,2,5,0,8,6], b.dimension)
+b.duplicate([1,3,6,5,0,2,4,7,8], b.dimension)
 sol = Solver(b)
 print sol.solver()
