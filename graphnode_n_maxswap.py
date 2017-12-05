@@ -173,10 +173,20 @@ class Solver:
 					q.enqueue((moves + nei.heuristic,nei))
 					# print "enqueueing " + str(nei.state)
 		return visited
+def print_as_board(b):
+	st = ''
+	for i in range(9):
+		if (i + 1) % 3 == 0:
+			st += '| '+ str(b[i]) + ' |\n'	
+		else:
+			st += '| '+ str(b[i]) + ' |'	
+	print st
+
 
 b = Board()
 # b.duplicate([1,5,4,8,6,2,7,3,0], b.dimension)
-b.duplicate([2, 0, 6, 1, 3, 4, 7, 5, 8], b.dimension)
+b.duplicate([4,1,3,7,2,5,0,8,6], b.dimension)
 #b.duplicate([1,3,6,5,0,2,4,7,8], b.dimension)
 sol = Solver(b)
-print sol.solver()
+for i in sol.solver():
+	print_as_board(i)

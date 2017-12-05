@@ -13,7 +13,6 @@ class State:
 		return (x - 1) % self.dimension
 
 	def checkforLC(self, k, j, i):
-		print k, j, i
 		if self.giveRow(self.state[i*self.dimension + k]) == self.giveRow(self.state[i*self.dimension + j]):
 			if self.giveCol(self.state[i*self.dimension + j]) > self.giveCol(self.state[i*self.dimension + k]):	
 				return True
@@ -25,7 +24,6 @@ class State:
 			for j in range(self.dimension):
 				k = j + 1
 				while k < self.dimension:
-					print k, j
 					if self.checkforLC(k, j, i):
 						heuristic += 1
 					k += 1
@@ -176,12 +174,20 @@ class Solver:
 					# print "enqueueing " + str(nei.state)
 		return visited
 
+def print_as_board(b):
+	st = ''
+	for i in range(9):
+		if (i + 1) % 3 == 0:
+			st += '| '+ str(b[i]) + ' |\n'	
+		else:
+			st += '| '+ str(b[i]) + ' |'	
+	print st
+
+
 b = Board()
 # b.duplicate([1,5,4,8,6,2,7,3,0], b.dimension)
-#b.duplicate([1,2,3,4,5,6,7,8,0], b.dimension)
-b.duplicate([4,1,3,7,2,5,0,8,6], b.dimension)
-#b.duplicate([1,3,6,5,0,2,4,7,8], b.dimension)
-st = State(b, b.dimension)
-print st.heuristic
+#b.duplicate([4,1,3,7,2,5,0,8,6], b.dimension)
+b.duplicate([4,1,3,2,0,5,7,8,6], b.dimension)
 sol = Solver(b)
-print sol.solver()
+for i in sol.solver():
+	print_as_board(i)
